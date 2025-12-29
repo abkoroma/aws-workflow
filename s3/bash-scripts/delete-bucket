@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# This script deletes an S3 bucket using the AWS CLI.
+
+BUCKET_NAME="$1" 
+
+if [ -z "$BUCKET_NAME" ]; then 
+    echo "Error: No bucket name provided." 
+    echo "Usage: $0 <bucket-name>" 
+    exit 1 
+fi 
+
+echo "This will permanently delete S3 bucket: $BUCKET_NAME"  
+read -p "Type 'yes' to continue: " CONFIRM
+
+if [ "$CONFIRM" != "yes" ]; then 
+    echo "Aborted." 
+    exit 0 
+fi
+    
+
+echo "Deleting bucket: $BUCKET_NAME"
+aws s3api delete-bucket --bucket "$BUCKET_NAME" 
+
+echo "Bucket deleted successfully."

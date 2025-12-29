@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# This script creates an S3 bucket using the AWS CLI.
+
+BUCKET_NAME="$1" 
+REGION="${2:-us-east-1}"
+
+# Check if bucket name is provided
+if [ -z "$1" ]; then
+  echo "Error: No bucket name provided."
+  exit 1
+fi
+
+echo "Creating S3 bucket: $BUCKET_NAME in region: $REGION"
+
+if [ "$REGION" = "us-east-1" ]; then 
+    aws s3api create-bucket --bucket "$BUCKET_NAME" 
+else aws s3api create-bucket \ 
+    --bucket "$BUCKET_NAME" \ 
+    --region "$REGION" \ 
+    --create-bucket-configuration LocationConstraint="$REGION" 
+fi 
+
+echo "Bucket created successfully."
