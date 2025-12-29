@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# This script puts objects in an S3 bucket using the AWS CLI.
+
+# Local directory to create random files
+BASE_DIR="/tmp/temp_s3_files"
+
+BUCKET_NAME="my-exe-bucket-abk"
+
+# Check if bucket name is provided
+if [ -z "$1" ]; then
+  echo "Error: No bucket name provided."
+  exit 1
+fi
+
+# Clear directory contents 
+rm -r "$BASE_DIR"
+
+# Create directory if missing
+mkdir -p "$BASE_DIR"
+
+# Generate a random number between 5 and 10
+COUNT=$(( RANDOM % 6 + 5 ))
+
+echo "Creating $COUNT random files in $BASE_DIR"
+
+for i in $(seq 1 $COUNT); do
+    # Random filename (8 random alphanumeric chars)
+    FILENAME=$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 8)
+
+    # Random size between 1KB and 100KB
+    SIZE=$(( (RANDOM % 100 + 1) * 1024 ))
+
+    # Create file with random content
+    head -c "$SIZE" </dev/urandom > "${BASE_DIR}/${FILENAME}.txt"
+
+    echo "Created ${BASE_DIR}/${FILENAME}.txt (${SIZE} bytes)"
+done
+
+echo
+echo "File creation complete."
+echo "Directory tree:"
+find "$BASE_DIR" -print
+
+echo echo "Uploading files to S3 bucket: $BUCKET_NAME" 
+aws s3 cp "$BASE_DIR" "s3://$BUCKET_NAME" --recursive
