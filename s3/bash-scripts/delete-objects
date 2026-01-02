@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Usage: ./delete_objects.sh <bucket-name>
+
+bucket="$1"
+
+if [[ -z "$bucket" ]]; then
+  echo "Usage: $0 <bucket-name>"
+  exit 1
+fi
+
+echo "Deleting all objects in bucket: $bucket"
+
+# List all object keys
+keys=$(aws s3api list-objects-v2 \
+  --bucket "$bucket" \
+  --query 'Contents[].Key' \
+  --output text)
+
+if [[ -z "$keys" ]]; then
+  echo "Bucket is already empty."
+  exit 0
+fi
+
+# Loop through and delete each object
+for key in $keys; do
+  echo "Deleting: $key"
+  aws s3api delete-object \
+    --bucket "$bucket" \
+    --key "$key"
+done
+
+echo "All objects deleted from $bucket"
