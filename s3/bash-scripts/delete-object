@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Usage: ./delete_one.sh <bucket> <key>
+
+bucket="$1"
+key="$2"
+
+if [[ -z "$bucket" || -z "$key" ]]; then
+  echo "Usage: $0 <bucket> <key>"
+  exit 1
+fi
+
+aws s3api delete-object \
+  --bucket "$bucket" \
+  --key "$key"
+
+echo "Deleted s3://$bucket/$key"

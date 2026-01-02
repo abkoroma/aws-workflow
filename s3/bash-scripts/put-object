@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Usage: ./upload_s3api.sh <file> <bucket> [key]
+# If key is not provided, the filename will be used.
+
+file="$1"
+bucket="$2"
+key="${3:-$(basename "$file")}"
+
+if [[ -z "$file" || -z "$bucket" ]]; then
+  echo "Usage: $0 <file> <bucket> [key]"
+  exit 1
+fi
+
+aws s3api put-object \
+  --bucket "$bucket" \
+  --key "$key" \
+  --body "$file"
+
+echo "Uploaded $file to s3://$bucket/$key"

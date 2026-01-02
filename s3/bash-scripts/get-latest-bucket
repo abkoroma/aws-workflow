@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Get the newest S3 bucket (most recently created)
+newest_bucket=$(aws s3api list-buckets \
+  --query 'Buckets | sort_by(@, &CreationDate)[-1].Name' \
+  --output text)
+
+echo "Newest bucket: $newest_bucket"
