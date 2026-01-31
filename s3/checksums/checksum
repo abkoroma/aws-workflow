@@ -1,0 +1,20 @@
+#!/bin/bash
+
+BUCKET="$1"
+KEY="$2"
+TMPFILE="/tmp/s3file.$$"
+
+if [ -z "$BUCKET" ] || [ -z "$KEY" ]; then
+  echo "Usage: $0 <bucket> <key>"
+  exit 1
+fi
+
+echo "Downloading s3://$BUCKET/$KEY ..."
+aws s3 cp "s3://$BUCKET/$KEY" "$TMPFILE" --quiet
+
+echo "Computing SHA-256 checksum..."
+CHECKSUM=$(shasum -a 256 "$TMPFILE" | awk '{print $1}')
+
+echo "Checksum: $CHECKSUM"
+
+rm -f "$TMPFILE"

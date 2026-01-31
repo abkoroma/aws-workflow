@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# --- CONFIGURATION ---
+BUCKET_NAME="my-demo-bucket-$(date +%s)"   # unique bucket name
+FILE_NAME="sample.txt"
+S3_KEY="uploads/sample.txt"
+
+# --- CREATE BUCKET ---
+echo "Creating bucket: $BUCKET_NAME"
+aws s3api create-bucket \
+  --bucket "$BUCKET_NAME" \
+  --region us-east-1
+
+# --- CREATE LOCAL FILE ---
+echo "Creating local file: $FILE_NAME"
+echo "This is a sample file uploaded with metadata." > "$FILE_NAME"
+
+# --- UPLOAD WITH METADATA ---
+echo "Uploading file with metadata..."
+aws s3api put-object \
+  --bucket "$BUCKET_NAME" \
+  --key "$S3_KEY" \
+  --body "$FILE_NAME" \
+  --metadata project=demo environment=dev owner=abk
+
+echo "Upload complete."
+echo "Bucket: $BUCKET_NAME"
+echo "File: s3://$BUCKET_NAME/$S3_KEY"
